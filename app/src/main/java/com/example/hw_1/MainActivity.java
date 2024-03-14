@@ -1,6 +1,8 @@
 package com.example.hw_1;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Bundle;
 import android.view.View;
@@ -11,32 +13,31 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
-    int clickCount = 0;
-    String userName = "Anonimous";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        MainViewModel viewModel = new ViewModelProvider(this).get(MainViewModel.class);
+
         //+ task 1
         TextView textViewClicker = findViewById(R.id.textViewClicker);
-        textViewClicker.setText("empty");
+        textViewClicker.setText("" + viewModel.clickCount.getValue());
 
         Button buttonClicker = findViewById(R.id.buttonClicker);
 
         buttonClicker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                clickCount++;
-                textViewClicker.setText("" + clickCount);
+                viewModel.clickCount.setValue(viewModel.clickCount.getValue() + 1);
+                textViewClicker.setText("" + viewModel.clickCount.getValue());
             }
         });
         //- task 1
 
         //+ task 2
         TextView textViewHello = findViewById(R.id.textViewHello);
-        textViewHello.setText("Привет, " + userName);
+        textViewHello.setText("Привет, " + viewModel.name.getValue());
 
         EditText editTextHello = findViewById(R.id.editTextHello);
 
@@ -44,11 +45,17 @@ public class MainActivity extends AppCompatActivity {
         buttonHello.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                userName = editTextHello.getText().toString();
-                textViewHello.setText("Привет, " + userName);
+                viewModel.name.postValue(editTextHello.getText().toString());
+//                textViewHello.setText("Привет, " + viewModel.name);
             }
         });
         //- task 2
+        viewModel.name.observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                textViewHello.setText("Привет, " + viewModel.name.getValue());
+            }
+        });
 
     }
 
