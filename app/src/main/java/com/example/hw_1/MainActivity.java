@@ -30,6 +30,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 viewModel.clickCount.setValue(viewModel.clickCount.getValue() + 1);
+            }
+        });
+        viewModel.clickCount.observe(this, new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer integer) {
                 textViewClicker.setText("" + viewModel.clickCount.getValue());
             }
         });
